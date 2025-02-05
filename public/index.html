@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Find Hotels in Bangalore</h1>
+        <form id="searchForm">
+            <input type="text" id="searchQuery" placeholder="Enter Address or food" required>
+            <input type="number" id="ratingFilter" placeholder="Minimum Rating (e.g., 4.5)" step="0.1" min="0" max="5">
+            <button type="submit">Search</button>
+        </form>
+        <div id="toggleContainer">
+            <button id="vegButton" class="veg-btn" onclick="showVeg()">Veg</button>
+            <button id="nonVegButton" class="nonveg-btn" onclick="showNonVeg()">Non-Veg</button>
+        </div>  
+        
+    </header>
+    
+    
+    <section id="featuredHotels">
+        <h2>Featured Hotels in Bangalore</h2>
+        <div id="hotelList"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Mohammed Ameen   | FoodHub</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
