@@ -1,42 +1,33 @@
 const express = require('express');
 const app = express();
 const PORT = 3000;
+const path = require('path');
 
-// Serve static files from the "public" folder
+// Middleware to parse form data
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files
 app.use(express.static('public'));
 
-// Sample hotel data
-const hotels = [
-    { id: 1, name: "Hotel A", location: "New York", cuisine: "Italian", rating: 4.5 },
-    { id: 2, name: "Hotel B", location: "Los Angeles", cuisine: "Mexican", rating: 4.2 },
-    { id: 3, name: "Hotel C", location: "Chicago", cuisine: "Indian", rating: 4.7 },
-];
-
-// Root route
-app.get('/', (req, res) => {
-    res.send('Welcome to the Hotel Finder API!');
+// Route to serve login page
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// API to get all hotels
-app.get('/api/hotels', (req, res) => {
-    res.json(hotels);
+// Handle login POST request
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    // Simple dummy login check
+    if (username === 'admin' && password === '1234') {
+        res.send('Login successful!');
+    } else {
+        res.send('Invalid credentials. Please try again.');
+    }
 });
 
-// API to get hotels by location
-app.get('/api/hotels/location', (req, res) => {
-    const location = req.query.location;
-    const filteredHotels = hotels.filter(hotel => 
-        hotel.location.toLowerCase().includes(location.toLowerCase())
-    );
-    res.json(filteredHotels);
-});
-
-// 404 Handler (must be at the end, after all other routes)
-app.use((req, res) => {
-    res.status(404).send('Page not found!');
-});
-
-// Start the server
+// Start server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+
