@@ -1,74 +1,33 @@
+require('dotenv').config();
 const express = require('express');
+const bodyParser = require('body-parser');
 const twilio = require('twilio');
+
 const app = express();
-const PORT = 3000;
+app.use(bodyParser.json());
 
+// Twilio client initialized using env variables
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
-// Middleware to parse JSON request bodies
-app.use(express.json());
+// OTP route
+app.post('/send-otp', (req, res) => {
+    const phoneNumber = req.body.phoneNumber;
+    const otp = Math.floor(100000 + Math.random() * 900000);
 
-// Example users (in a real app, store users in a database)
-const users = [
-    { phoneNumber: '+1234567890', name: 'John Doe' }, // Example phone number
-];
-
-// Twilio credentials (replace with your own)
-
-require('dotenv').config();  // Add this line to load the .env variables
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const client = require('twilio')(accountSid, authToken);
-
-// Function to send OTP via SMS
-function sendOTPSMS(phoneNumber, otp) {
     client.messages
         .create({
-            body: `Your OTP code is: ${otp}`,
-            from: 'your_twilio_number', // Twilio number
-            to: phoneNumber, // The recipient's phone number
+            body: `Your OTP is: ${otp}`,
+            from: process.env.TWILIO_PHONE_NUMBER,
+            to: phoneNumber,
         })
-        .then(message => console.log('OTP sent:', message.sid))
-        .catch(error => console.log('Error sending OTP:', error));
-}
-
-// API to request OTP (for login)
-app.post('/api/request-otp', (req, res) => {
-    const { phoneNumber } = req.body;
-
-    // Check if the phone number is valid
-    const user = users.find(u => u.phoneNumber === phoneNumber);
-
-    if (!user) {
-        return res.status(404).send('User not found');
-    }
-
-    // Generate a random 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Send OTP SMS
-    sendOTPSMS(phoneNumber, otp);
-
-    // Store OTP temporarily (in memory or a database) for later verification
-    // In a real-world application, store OTP with an expiration time (e.g., 5 minutes)
-    res.send('OTP sent to your phone number');
+        .then((message) => {
+            res.status(200).json({ success: true, sid: message.sid });
+        })
+        .catch((err) => {
+            res.status(500).json({ success: false, error: err.message });
+        });
 });
 
-// API to verify OTP
-let storedOTP = ''; // Store OTP temporarily in memory for verification
-
-app.post('/api/verify-otp', (req, res) => {
-    const { phoneNumber, otp } = req.body;
-
-    if (otp === storedOTP) {
-        return res.send('OTP verified successfully!');
-    }
-
-    return res.status(400).send('Invalid OTP');
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
 });
-
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
-
