@@ -10,8 +10,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Route to serve login page
+
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    res.sendFile(__dirname + '/public/login.html');
 });
 
 // Handle login POST request
