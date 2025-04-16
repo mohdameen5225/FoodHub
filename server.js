@@ -3,6 +3,7 @@ const twilio = require('twilio');
 const app = express();
 const PORT = 3000;
 
+
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
@@ -12,9 +13,12 @@ const users = [
 ];
 
 // Twilio credentials (replace with your own)
-const accountSid = 'your_account_sid';  // Twilio Account SID
-const authToken = 'your_auth_token';    // Twilio Auth Token
-const client = twilio(accountSid, authToken);
+
+require('dotenv').config();  // Add this line to load the .env variables
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
 
 // Function to send OTP via SMS
 function sendOTPSMS(phoneNumber, otp) {
