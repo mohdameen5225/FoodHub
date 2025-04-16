@@ -1,34 +1,64 @@
-<!-- public/login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
 </head>
 <body>
-  <header>
     <h1>Login</h1>
-  </header>
-
-  <main style="text-align: center; margin-top: 50px;">
     <form id="loginForm">
-      <input type="text" id="username" placeholder="Username" required><br><br>
-      <input type="password" id="password" placeholder="Password" required><br><br>
-      <button type="submit">Login</button>
+        <input type="tel" id="phoneNumber" placeholder="Enter your phone number" required>
+        <button type="submit">Send OTP</button>
     </form>
-  </main>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    <form id="verifyForm" style="display:none;">
+        <input type="text" id="otp" placeholder="Enter OTP" required>
+        <button type="submit">Verify OTP</button>
+    </form>
 
-      // Optionally validate input here
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-      // Redirect to home page
-      window.location.href = "index.html";
-    });
-  </script>
+            const phoneNumber = document.getElementById('phoneNumber').value;
+
+            // Send OTP request to the server
+            const response = await fetch('http://localhost:3000/api/request-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phoneNumber }),
+            });
+
+            const data = await response.text();
+            alert(data); // Show the response message
+
+            // Hide login form and show OTP verification form
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('verifyForm').style.display = 'block';
+        });
+
+        document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const otp = document.getElementById('otp').value;
+
+            // Send OTP verification request to the server
+            const response = await fetch('http://localhost:3000/api/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phoneNumber, otp }),
+            });
+
+            const data = await response.text();
+            alert(data); // Show the response message
+        });
+    </script>
 </body>
 </html>
 
